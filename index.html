@@ -3,157 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>來自小秋的信</title>
+    <title>小秋的特派任務</title>
     <style>
+        :root {
+            --primary-color: #ff69b4;
+            --secondary-color: #ffe4e1;
+            --text-dark: #444;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ffe4e1;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+            background-color: var(--secondary-color);
             font-family: 'Microsoft JhengHei', sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* 信封動畫 */
-        #envelope {
-            width: 200px;
-            height: 140px;
-            background: #ff69b4;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            animation: flyIn 1.5s ease-out forwards;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 5px;
-        }
-
-        #envelope::after {
-            content: "✉️";
-            font-size: 50px;
-        }
-
-        @keyframes flyIn {
-            0% { transform: scale(0) translateY(500px) rotate(20deg); opacity: 0; }
-            100% { transform: scale(1.5) translateY(0) rotate(0deg); opacity: 1; }
-        }
-
-        /* 視窗樣式 */
+        /* 視窗通用樣式 */
         .modal {
             display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
             text-align: center;
-            width: 300px;
+            width: 85%;
+            max-width: 400px;
             z-index: 100;
         }
 
-        .modal h2 { color: #ff1493; font-size: 1.2rem; margin-bottom: 20px; }
-        .btn-group { display: flex; justify-content: space-around; margin-top: 20px; }
-        
-        button {
-            padding: 10px 25px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+        h2 { color: var(--primary-color); font-size: 1.3rem; margin-bottom: 15px; }
+        p { color: var(--text-dark); line-height: 1.6; }
+
+        /* 信封動畫 */
+        #envelope {
+            width: 150px; height: 110px;
+            background: var(--primary-color);
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 8px; cursor: pointer;
+            animation: flyIn 1.2s ease-out forwards;
+        }
+        #envelope::after { content: "✉️"; font-size: 40px; }
+
+        @keyframes flyIn {
+            0% { transform: scale(0) translateY(400px); opacity: 0; }
+            100% { transform: scale(1.5) translateY(0); opacity: 1; }
         }
 
-        .btn-yes { background: #ff69b4; color: white; }
-        .btn-no { background: #ddd; color: #777; }
-        .btn-no.disabled { cursor: not-allowed; opacity: 0.5; pointer-events: none; }
+        /* 按鈕樣式 */
+        .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        button {
+            padding: 10px 20px; border: none; border-radius: 25px;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        .btn-main { background: var(--primary-color); color: white; }
+        .btn-sub { background: #eee; color: #888; }
+        .disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* 打字效果 */
-        .typewriter-text { line-height: 1.6; color: #555; margin-bottom: 20px; }
+        /* 問題選項樣式 */
+        .quiz-container {
+            text-align: left;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .quiz-option {
+            background: #f9f9f9; padding: 8px; border-radius: 8px;
+            font-size: 0.9rem; cursor: pointer; border: 1px solid #eee;
+        }
+        .quiz-option input { margin-right: 8px; }
+        .quiz-option.selected { background: #fff0f5; border-color: var(--primary-color); }
+
+        /* 最終邀請函樣式 */
+        #invitation-card {
+            background: #fff; border: 2px solid var(--primary-color);
+            padding: 30px; text-align: left;
+        }
+        .highlight { color: #d63384; font-weight: bold; }
+        .michelin { color: #c41e3a; font-weight: bold; border-bottom: 2px solid #c41e3a; }
     </style>
 </head>
 <body>
 
-    <div id="envelope" onclick="startInteraction()"></div>
+    <div id="envelope" onclick="showModal('modal-identity')"></div>
 
-    <div id="modal1" class="modal">
-        <h2>Hello你好！<br>你是這封信的主人<br>霧唇界的未來之星<br>✨ 楊屁桃 ✨ 嗎？</h2>
+    <div id="modal-identity" class="modal">
+        <h2>Hello你好！</h2>
+        <p>你是這封信的主人<br>霧唇界的未來之星 <b>楊屁桃</b> 嗎？</p>
         <div class="btn-group">
-            <button class="btn-yes" onclick="checkIdentity(true)">是</button>
-            <button class="btn-no" onclick="checkIdentity(false)">不是</button>
+            <button class="btn-main" onclick="showIntro()">是</button>
+            <button class="btn-sub" onclick="showModal('modal-force')">不是</button>
         </div>
     </div>
 
     <div id="modal-force" class="modal">
         <h2>不管！你就是！😤</h2>
-        <p>請乖乖回上一頁選擇「是」。</p>
-        <button class="btn-yes" onclick="backToModal1()">好啦我是</button>
+        <p>這封信指名要給楊屁桃，<br>請回上一頁乖乖選「是」。</p>
+        <button class="btn-main" onclick="showModal('modal-identity')">好啦我是</button>
     </div>
 
-    <div id="modal2" class="modal">
-        <div class="typewriter-text" id="intro-text"></div>
-        <div id="final-btns" style="display:none;">
-            <div class="btn-group">
-                <button class="btn-yes" onclick="receiveLetter()">接收信件</button>
-                <button class="btn-no disabled">不接收</button>
-            </div>
+    <div id="modal-intro" class="modal">
+        <p id="intro-text" style="white-space: pre-line; min-height: 150px;"></p>
+        <div id="intro-btns" style="display:none;" class="btn-group">
+            <button class="btn-main" onclick="showQuiz()">接收信件</button>
+            <button class="btn-sub disabled">不接收</button>
         </div>
     </div>
 
+    <div id="modal-quiz" class="modal">
+        <h2>安全驗證 🔐</h2>
+        <p style="font-size: 0.9rem;">為了確保你是阿秋要找的人，我會考你一個問題，這只有你們知道：</p>
+        <p><b>在阿秋眼裡，誰是最漂亮的？</b><br><small>(提示：答案只有複選兩個)</small></p>
+        
+        <div class="quiz-container" id="quiz-options">
+            </div>
+        
+        <button class="btn-main" style="width: 100%;" onclick="checkQuiz()">送出答案</button>
+    </div>
+
+    <div id="invitation-card" class="modal">
+        <h2 style="text-align:center;">✉️ 專屬活動邀請函</h2>
+        <p>親愛的楊屁桃：</p>
+        <p>想真誠邀請你一起參加我 <span class="highlight">5/22（五）</span>的員工家庭日活動。</p>
+        <p>這次活動可以帶朋友同行，而且全程都是<span class="highlight">免費</span>的，不用負擔任何費用。</p>
+        <p>當天會一起到北埔走走、看看古蹟，中午特別安排到<span class="michelin">2025米其林入選餐廳「泥磚屋」</span>享用客家料理。</p>
+        <p>如果你那天剛好有空，我會很開心你能一起來，就當作放鬆一下的小旅行。🌿</p>
+        <hr style="border: 0.5px solid #eee; margin: 20px 0;">
+        <p style="font-size: 0.9rem; color: #666; text-align: center;">
+            ✨ 記得星期一要回覆喔！<br>我回來再來找妳的。
+        </p>
+    </div>
+
     <script>
-        const envelope = document.getElementById('envelope');
-        const modal1 = document.getElementById('modal1');
-        const modalForce = document.getElementById('modal-force');
-        const modal2 = document.getElementById('modal2');
-        const introText = document.getElementById('intro-text');
-        const finalBtns = document.getElementById('final-btns');
+        const names = [
+            "魏嘉玲", "李安倪", "楊星彤", "張淑婷", "鄭潔", 
+            "陳秋梅", "吳依容", "徐懷鈺", "蔡俐佳", "法拉利姐"
+        ];
 
-        function startInteraction() {
-            envelope.style.display = 'none';
-            modal1.style.display = 'block';
+        // 顯示特定的視窗
+        function showModal(id) {
+            document.querySelectorAll('.modal, #envelope').forEach(el => el.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
         }
 
-        function checkIdentity(isPitao) {
-            if (isPitao) {
-                modal1.style.display = 'none';
-                modal2.style.display = 'block';
-                startTyping();
-            } else {
-                modal1.style.display = 'none';
-                modalForce.style.display = 'block';
-            }
-        }
-
-        function backToModal1() {
-            modalForce.style.display = 'none';
-            modal1.style.display = 'block';
-        }
-
-        function startTyping() {
-            const content = "你好，就是你了！\n你就是阿秋口中的明日之星。🌟\n\n阿秋跟我說，他找不到你，\n他有事情要跟妳說。\n\n對了，我忘記自我介紹，\n我是小秋，阿秋的特派使者。\n我這邊有封信要給你。";
+        // 打字機效果
+        function showIntro() {
+            showModal('modal-intro');
+            const text = "你好，就是你了！\n你就是阿秋口中的明日之星。🌟\n\n阿秋跟我說，他找不到你，\n他有事情要跟妳說。\n\n對了，我忘記自我介紹，\n我是小秋，阿秋的特派使者。\n我這邊有封信要給你。";
             let i = 0;
+            const target = document.getElementById('intro-text');
             function typing() {
-                if (i < content.length) {
-                    introText.innerText += content.charAt(i);
+                if (i < text.length) {
+                    target.innerText += text.charAt(i);
                     i++;
-                    setTimeout(typing, 80);
+                    setTimeout(typing, 60);
                 } else {
-                    finalBtns.style.display = 'block';
+                    document.getElementById('intro-btns').style.display = 'flex';
                 }
             }
             typing();
         }
 
-        function receiveLetter() {
-            alert("💌 信件已成功接收！即將打開阿秋的話...");
-            // 這裡可以接下一個頁面網址
-            // window.location.href = "your_next_page.html";
+        // 載入測驗選項
+        function showQuiz() {
+            showModal('modal-quiz');
+            const container = document.getElementById('quiz-options');
+            names.forEach((name, index) => {
+                const label = document.createElement('label');
+                label.className = 'quiz-option';
+                label.innerHTML = `<input type="checkbox" value="${index + 1}"> ${index + 1}. ${name}`;
+                container.appendChild(label);
+            });
+        }
+
+        // 檢查測驗答案
+        function checkQuiz() {
+            const selected = Array.from(document.querySelectorAll('#quiz-options input:checked')).map(i => i.value);
+            
+            // 檢查是否剛好選兩個，且答案是 3 和 8
+            if (selected.length === 2 && selected.includes("3") && selected.includes("8")) {
+                alert("驗證成功！楊屁桃身分確認。✅");
+                showModal('invitation-card');
+            } else {
+                alert("哎呀，看來你不是真的楊屁桃...再試一次吧！❌");
+                // 清空勾選
+                document.querySelectorAll('#quiz-options input').forEach(i => i.checked = false);
+            }
         }
     </script>
 </body>
