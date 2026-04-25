@@ -17,7 +17,21 @@
             min-height: 100vh;
             background-color: var(--secondary-color);
             font-family: 'Microsoft JhengHei', sans-serif;
-            overflow-x: hidden;
+            overflow: hidden; 
+        }
+
+        /* 小秋特派使者樣式 */
+        #envoy {
+            position: fixed;
+            z-index: 200;
+            transition: all 2.5s ease-in-out; 
+            pointer-events: none; 
+            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1));
+        }
+
+        #envoy img {
+            width: 130px; 
+            height: auto;
         }
 
         .modal {
@@ -30,6 +44,7 @@
             width: 85%;
             max-width: 400px;
             z-index: 100;
+            position: relative;
         }
 
         h2 { color: var(--primary-color); font-size: 1.3rem; margin-bottom: 15px; }
@@ -70,7 +85,6 @@
             font-size: 0.9rem; cursor: pointer; border: 1px solid #eee;
         }
         .quiz-option input { margin-right: 8px; }
-        .quiz-option.selected { background: #fff0f5; border-color: var(--primary-color); }
 
         #invitation-card {
             background: #fff; border: 2px solid var(--primary-color);
@@ -81,6 +95,10 @@
     </style>
 </head>
 <body>
+
+    <div id="envoy">
+        <img src="Me.PNG" alt="小秋特派員" id="envoy-img">
+    </div>
 
     <audio id="bgm-playful" loop src="Upbeat%20Ukul.mp3"></audio>
     <audio id="bgm-relax" loop src="Acoustic%20Guitar.mp3"></audio>
@@ -112,11 +130,9 @@
 
     <div id="modal-quiz" class="modal">
         <h2>安全驗證 🔐</h2>
-        <p style="font-size: 0.9rem;">為了確保你是阿秋要找的人，我會考你一個問題，這只有你們知道：</p>
+        <p style="font-size: 0.9rem;">為了確保你是阿秋要找的人，我會考你一個問題：</p>
         <p><b>在阿秋眼裡，誰是最漂亮的？</b><br><small>(提示：答案只有複選兩個)</small></p>
-        
         <div class="quiz-container" id="quiz-options"></div>
-        
         <button class="btn-main" style="width: 100%;" onclick="checkQuiz()">送出答案</button>
     </div>
 
@@ -124,9 +140,9 @@
         <h2 style="text-align:center;">✉️ 專屬活動邀請函</h2>
         <p>親愛的楊屁桃：</p>
         <p>想真誠邀請你一起參加我 <span class="highlight">5/22（五）</span>的員工家庭日活動。</p>
-        <p>這次活動可以帶朋友同行，而且全程都是<span class="highlight">免費</span>的，不用負擔任何費用。</p>
-        <p>當天會一起到北埔走走、看看古蹟，中午特別安排到<span class="michelin">2025米其林入選餐廳「泥磚屋」</span>享用客家料理。</p>
-        <p>如果你那天剛好有空，我會很開心你能一起來，就當作放鬆一下的小旅行。🌿</p>
+        <p>這次活動可以帶朋友同行，而且全程都是<span class="highlight">免費</span>的。</p>
+        <p>當天會一起到北埔走走，中午特別安排到<span class="michelin">2025米其林入選餐廳「泥磚屋」</span>享用客家料理。</p>
+        <p>如果你那天剛好有空，我會很開心你能一起來。🌿</p>
         <hr style="border: 0.5px solid #eee; margin: 20px 0;">
         <p style="font-size: 0.9rem; color: #666; text-align: center;">
             ✨ 記得星期一要回覆喔！<br>我回來再來找妳的。
@@ -137,10 +153,22 @@
         const names = ["魏嘉玲", "李安倪", "楊星彤", "張淑婷", "鄭潔", "陳秋梅", "吳依容", "徐懷鈺", "蔡俐佳", "法拉利姐"];
         const bgm1 = document.getElementById('bgm-playful');
         const bgm2 = document.getElementById('bgm-relax');
+        const envoy = document.getElementById('envoy');
 
-        // 點擊信封開始
+        function moveEnvoy() {
+            const maxX = window.innerWidth - 150;
+            const maxY = window.innerHeight - 150;
+            const x = Math.max(10, Math.random() * maxX);
+            const y = Math.max(10, Math.random() * maxY);
+            envoy.style.left = `${x}px`;
+            envoy.style.top = `${y}px`;
+        }
+
+        setInterval(moveEnvoy, 2500);
+        moveEnvoy();
+
         function startExperience() {
-            bgm1.play().catch(e => console.log("Audio play blocked"));
+            bgm1.play().catch(e => console.log("Audio blocked"));
             showModal('modal-identity');
         }
 
@@ -169,7 +197,7 @@
         function showQuiz() {
             showModal('modal-quiz');
             const container = document.getElementById('quiz-options');
-            if (container.innerHTML === "") { // 避免重複生成
+            if (container.innerHTML === "") {
                 names.forEach((name, index) => {
                     const label = document.createElement('label');
                     label.className = 'quiz-option';
@@ -182,9 +210,8 @@
         function checkQuiz() {
             const selected = Array.from(document.querySelectorAll('#quiz-options input:checked')).map(i => i.value);
             if (selected.length === 2 && selected.includes("3") && selected.includes("8")) {
-                // 驗證成功，換音樂
                 bgm1.pause();
-                bgm2.play().catch(e => console.log("Audio play blocked"));
+                bgm2.play().catch(e => console.log("Audio blocked"));
                 alert("驗證成功！楊屁桃身分確認。✅");
                 showModal('invitation-card');
             } else {
