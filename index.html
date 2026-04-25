@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* 視窗通用樣式 */
         .modal {
             display: none;
             background: white;
@@ -36,7 +35,6 @@
         h2 { color: var(--primary-color); font-size: 1.3rem; margin-bottom: 15px; }
         p { color: var(--text-dark); line-height: 1.6; }
 
-        /* 信封動畫 */
         #envelope {
             width: 150px; height: 110px;
             background: var(--primary-color);
@@ -51,7 +49,6 @@
             100% { transform: scale(1.5) translateY(0); opacity: 1; }
         }
 
-        /* 按鈕樣式 */
         .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
         button {
             padding: 10px 20px; border: none; border-radius: 25px;
@@ -61,7 +58,6 @@
         .btn-sub { background: #eee; color: #888; }
         .disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* 問題選項樣式 */
         .quiz-container {
             text-align: left;
             display: grid;
@@ -76,7 +72,6 @@
         .quiz-option input { margin-right: 8px; }
         .quiz-option.selected { background: #fff0f5; border-color: var(--primary-color); }
 
-        /* 最終邀請函樣式 */
         #invitation-card {
             background: #fff; border: 2px solid var(--primary-color);
             padding: 30px; text-align: left;
@@ -87,7 +82,10 @@
 </head>
 <body>
 
-    <div id="envelope" onclick="showModal('modal-identity')"></div>
+    <audio id="bgm-playful" loop src="Upbeat%20Ukul.mp3"></audio>
+    <audio id="bgm-relax" loop src="Acoustic%20Guitar.mp3"></audio>
+
+    <div id="envelope" onclick="startExperience()"></div>
 
     <div id="modal-identity" class="modal">
         <h2>Hello你好！</h2>
@@ -117,8 +115,7 @@
         <p style="font-size: 0.9rem;">為了確保你是阿秋要找的人，我會考你一個問題，這只有你們知道：</p>
         <p><b>在阿秋眼裡，誰是最漂亮的？</b><br><small>(提示：答案只有複選兩個)</small></p>
         
-        <div class="quiz-container" id="quiz-options">
-            </div>
+        <div class="quiz-container" id="quiz-options"></div>
         
         <button class="btn-main" style="width: 100%;" onclick="checkQuiz()">送出答案</button>
     </div>
@@ -137,18 +134,21 @@
     </div>
 
     <script>
-        const names = [
-            "魏嘉玲", "李安倪", "楊星彤", "張淑婷", "鄭潔", 
-            "陳秋梅", "吳依容", "徐懷鈺", "蔡俐佳", "法拉利姐"
-        ];
+        const names = ["魏嘉玲", "李安倪", "楊星彤", "張淑婷", "鄭潔", "陳秋梅", "吳依容", "徐懷鈺", "蔡俐佳", "法拉利姐"];
+        const bgm1 = document.getElementById('bgm-playful');
+        const bgm2 = document.getElementById('bgm-relax');
 
-        // 顯示特定的視窗
+        // 點擊信封開始
+        function startExperience() {
+            bgm1.play().catch(e => console.log("Audio play blocked"));
+            showModal('modal-identity');
+        }
+
         function showModal(id) {
             document.querySelectorAll('.modal, #envelope').forEach(el => el.style.display = 'none');
             document.getElementById(id).style.display = 'block';
         }
 
-        // 打字機效果
         function showIntro() {
             showModal('modal-intro');
             const text = "你好，就是你了！\n你就是阿秋口中的明日之星。🌟\n\n阿秋跟我說，他找不到你，\n他有事情要跟妳說。\n\n對了，我忘記自我介紹，\n我是小秋，阿秋的特派使者。\n我這邊有封信要給你。";
@@ -166,29 +166,29 @@
             typing();
         }
 
-        // 載入測驗選項
         function showQuiz() {
             showModal('modal-quiz');
             const container = document.getElementById('quiz-options');
-            names.forEach((name, index) => {
-                const label = document.createElement('label');
-                label.className = 'quiz-option';
-                label.innerHTML = `<input type="checkbox" value="${index + 1}"> ${index + 1}. ${name}`;
-                container.appendChild(label);
-            });
+            if (container.innerHTML === "") { // 避免重複生成
+                names.forEach((name, index) => {
+                    const label = document.createElement('label');
+                    label.className = 'quiz-option';
+                    label.innerHTML = `<input type="checkbox" value="${index + 1}"> ${index + 1}. ${name}`;
+                    container.appendChild(label);
+                });
+            }
         }
 
-        // 檢查測驗答案
         function checkQuiz() {
             const selected = Array.from(document.querySelectorAll('#quiz-options input:checked')).map(i => i.value);
-            
-            // 檢查是否剛好選兩個，且答案是 3 和 8
             if (selected.length === 2 && selected.includes("3") && selected.includes("8")) {
+                // 驗證成功，換音樂
+                bgm1.pause();
+                bgm2.play().catch(e => console.log("Audio play blocked"));
                 alert("驗證成功！楊屁桃身分確認。✅");
                 showModal('invitation-card');
             } else {
                 alert("哎呀，看來你不是真的楊屁桃...再試一次吧！❌");
-                // 清空勾選
                 document.querySelectorAll('#quiz-options input').forEach(i => i.checked = false);
             }
         }
