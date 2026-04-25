@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>來自小秋的信</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffe4e1;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 信封動畫 */
+        #envelope {
+            width: 200px;
+            height: 140px;
+            background: #ff69b4;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: flyIn 1.5s ease-out forwards;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        #envelope::after {
+            content: "✉️";
+            font-size: 50px;
+        }
+
+        @keyframes flyIn {
+            0% { transform: scale(0) translateY(500px) rotate(20deg); opacity: 0; }
+            100% { transform: scale(1.5) translateY(0) rotate(0deg); opacity: 1; }
+        }
+
+        /* 視窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 300px;
+            z-index: 100;
+        }
+
+        .modal h2 { color: #ff1493; font-size: 1.2rem; margin-bottom: 20px; }
+        .btn-group { display: flex; justify-content: space-around; margin-top: 20px; }
+        
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-yes { background: #ff69b4; color: white; }
+        .btn-no { background: #ddd; color: #777; }
+        .btn-no.disabled { cursor: not-allowed; opacity: 0.5; pointer-events: none; }
+
+        /* 打字效果 */
+        .typewriter-text { line-height: 1.6; color: #555; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="envelope" onclick="startInteraction()"></div>
+
+    <div id="modal1" class="modal">
+        <h2>Hello你好！<br>你是這封信的主人<br>霧唇界的未來之星<br>✨ 楊屁桃 ✨ 嗎？</h2>
+        <div class="btn-group">
+            <button class="btn-yes" onclick="checkIdentity(true)">是</button>
+            <button class="btn-no" onclick="checkIdentity(false)">不是</button>
+        </div>
+    </div>
+
+    <div id="modal-force" class="modal">
+        <h2>不管！你就是！😤</h2>
+        <p>請乖乖回上一頁選擇「是」。</p>
+        <button class="btn-yes" onclick="backToModal1()">好啦我是</button>
+    </div>
+
+    <div id="modal2" class="modal">
+        <div class="typewriter-text" id="intro-text"></div>
+        <div id="final-btns" style="display:none;">
+            <div class="btn-group">
+                <button class="btn-yes" onclick="receiveLetter()">接收信件</button>
+                <button class="btn-no disabled">不接收</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const modal1 = document.getElementById('modal1');
+        const modalForce = document.getElementById('modal-force');
+        const modal2 = document.getElementById('modal2');
+        const introText = document.getElementById('intro-text');
+        const finalBtns = document.getElementById('final-btns');
+
+        function startInteraction() {
+            envelope.style.display = 'none';
+            modal1.style.display = 'block';
+        }
+
+        function checkIdentity(isPitao) {
+            if (isPitao) {
+                modal1.style.display = 'none';
+                modal2.style.display = 'block';
+                startTyping();
+            } else {
+                modal1.style.display = 'none';
+                modalForce.style.display = 'block';
+            }
+        }
+
+        function backToModal1() {
+            modalForce.style.display = 'none';
+            modal1.style.display = 'block';
+        }
+
+        function startTyping() {
+            const content = "你好，就是你了！\n你就是阿秋口中的明日之星。🌟\n\n阿秋跟我說，他找不到你，\n他有事情要跟妳說。\n\n對了，我忘記自我介紹，\n我是小秋，阿秋的特派使者。\n我這邊有封信要給你。";
+            let i = 0;
+            function typing() {
+                if (i < content.length) {
+                    introText.innerText += content.charAt(i);
+                    i++;
+                    setTimeout(typing, 80);
+                } else {
+                    finalBtns.style.display = 'block';
+                }
+            }
+            typing();
+        }
+
+        function receiveLetter() {
+            alert("💌 信件已成功接收！即將打開阿秋的話...");
+            // 這裡可以接下一個頁面網址
+            // window.location.href = "your_next_page.html";
+        }
+    </script>
+</body>
+</html>
