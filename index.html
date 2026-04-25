@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小秋的特派任務</title>
+    
+    <title>您有一則未讀訊息</title>
+    <meta property="og:title" content="系統安全通知">
+    <meta property="og:description" content="您收到了一則加密傳輸檔案，請點擊連結進行身分驗證。">
+    <meta property="og:image" content="https://img.icons8.com/color/96/lock-landscape.png">
+
     <style>
         :root {
             --primary-color: #ff69b4;
@@ -30,10 +35,11 @@
         }
 
         #envoy img {
-            width: 130px; 
+            width: 140px; 
             height: auto;
         }
 
+        /* 視窗樣式 */
         .modal {
             display: none;
             background: white;
@@ -50,6 +56,7 @@
         h2 { color: var(--primary-color); font-size: 1.3rem; margin-bottom: 15px; }
         p { color: var(--text-dark); line-height: 1.6; }
 
+        /* 信封動畫 */
         #envelope {
             width: 150px; height: 110px;
             background: var(--primary-color);
@@ -64,6 +71,7 @@
             100% { transform: scale(1.5) translateY(0); opacity: 1; }
         }
 
+        /* 按鈕樣式 */
         .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
         button {
             padding: 10px 20px; border: none; border-radius: 25px;
@@ -73,6 +81,7 @@
         .btn-sub { background: #eee; color: #888; }
         .disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* 測驗樣式 */
         .quiz-container {
             text-align: left;
             display: grid;
@@ -86,6 +95,7 @@
         }
         .quiz-option input { margin-right: 8px; }
 
+        /* 最終邀請函樣式 */
         #invitation-card {
             background: #fff; border: 2px solid var(--primary-color);
             padding: 30px; text-align: left;
@@ -97,7 +107,7 @@
 <body>
 
     <div id="envoy">
-        <img src="Me.PNG" alt="小秋特派員" id="envoy-img">
+        <img src="Me.PNG" alt="小秋特派員">
     </div>
 
     <audio id="bgm-playful" loop src="Upbeat%20Ukul.mp3"></audio>
@@ -121,7 +131,7 @@
     </div>
 
     <div id="modal-intro" class="modal">
-        <p id="intro-text" style="white-space: pre-line; min-height: 150px;"></p>
+        <p id="intro-text" style="white-space: pre-line; min-height: 150px; text-align: left;"></p>
         <div id="intro-btns" style="display:none;" class="btn-group">
             <button class="btn-main" onclick="showQuiz()">接收信件</button>
             <button class="btn-sub disabled">不接收</button>
@@ -130,8 +140,8 @@
 
     <div id="modal-quiz" class="modal">
         <h2>安全驗證 🔐</h2>
-        <p style="font-size: 0.9rem;">為了確保你是阿秋要找的人，我會考你一個問題：</p>
-        <p><b>在阿秋眼裡，誰是最漂亮的？</b><br><small>(提示：答案只有複選兩個)</small></p>
+        <p style="font-size: 0.9rem;">為了確保你是阿秋要找的人，考你一個只有你們知道的問題：</p>
+        <p><b>在阿秋眼裡，誰是最漂亮的？</b><br><small>(提示：答案是複選兩個)</small></p>
         <div class="quiz-container" id="quiz-options"></div>
         <button class="btn-main" style="width: 100%;" onclick="checkQuiz()">送出答案</button>
     </div>
@@ -140,9 +150,9 @@
         <h2 style="text-align:center;">✉️ 專屬活動邀請函</h2>
         <p>親愛的楊屁桃：</p>
         <p>想真誠邀請你一起參加我 <span class="highlight">5/22（五）</span>的員工家庭日活動。</p>
-        <p>這次活動可以帶朋友同行，而且全程都是<span class="highlight">免費</span>的。</p>
-        <p>當天會一起到北埔走走，中午特別安排到<span class="michelin">2025米其林入選餐廳「泥磚屋」</span>享用客家料理。</p>
-        <p>如果你那天剛好有空，我會很開心你能一起來。🌿</p>
+        <p>這次活動可以帶朋友同行，而且全程都是<span class="highlight">免費</span>的，不用負擔任何費用。</p>
+        <p>當天會一起到北埔走走、看看古蹟，中午特別安排到<span class="michelin">2025米其林入選餐廳「泥磚屋」</span>享用客家料理。</p>
+        <p>如果你那天剛好有空，我會很開心你能一起來，就當作放鬆一下的小旅行。🌿</p>
         <hr style="border: 0.5px solid #eee; margin: 20px 0;">
         <p style="font-size: 0.9rem; color: #666; text-align: center;">
             ✨ 記得星期一要回覆喔！<br>我回來再來找妳的。
@@ -155,6 +165,7 @@
         const bgm2 = document.getElementById('bgm-relax');
         const envoy = document.getElementById('envoy');
 
+        // 使者隨機移動
         function moveEnvoy() {
             const maxX = window.innerWidth - 150;
             const maxY = window.innerHeight - 150;
@@ -163,18 +174,17 @@
             envoy.style.left = `${x}px`;
             envoy.style.top = `${y}px`;
         }
-
         setInterval(moveEnvoy, 2500);
         moveEnvoy();
-
-        function startExperience() {
-            bgm1.play().catch(e => console.log("Audio blocked"));
-            showModal('modal-identity');
-        }
 
         function showModal(id) {
             document.querySelectorAll('.modal, #envelope').forEach(el => el.style.display = 'none');
             document.getElementById(id).style.display = 'block';
+        }
+
+        function startExperience() {
+            bgm1.play().catch(e => console.log("Audio play blocked"));
+            showModal('modal-identity');
         }
 
         function showIntro() {
@@ -209,9 +219,10 @@
 
         function checkQuiz() {
             const selected = Array.from(document.querySelectorAll('#quiz-options input:checked')).map(i => i.value);
+            // 答案是 3 (楊星彤) 和 8 (徐懷鈺)
             if (selected.length === 2 && selected.includes("3") && selected.includes("8")) {
                 bgm1.pause();
-                bgm2.play().catch(e => console.log("Audio blocked"));
+                bgm2.play().catch(e => console.log("Audio play blocked"));
                 alert("驗證成功！楊屁桃身分確認。✅");
                 showModal('invitation-card');
             } else {
